@@ -55,7 +55,7 @@ void clampedExpVector(float *values, int *exponents, float *output, int N)
   __pp_vec_float zero = _pp_vset_float(0.f);
   __pp_vec_float nine = _pp_vset_float(9.999999f);
   __pp_vec_int zeroInt = _pp_vset_int(0);
-  __pp_mask maskAll, maskIsZero maskIsNotZero, maskStillCount, maskTooBig;
+  __pp_mask maskAll, maskIsZero, maskIsNotZero, maskStillCount, maskTooBig;
   for (int i = 0; i < N; i += VECTOR_WIDTH)
   {
     // All ones
@@ -66,9 +66,9 @@ void clampedExpVector(float *values, int *exponents, float *output, int N)
 
     // Load vector of values from contiguous memory addresses
     _pp_vload_float(x, values + i, maskAll); // x = values[i];
-    _pp_vload_float(y, exponents + i, maskAll); // y = exponents[i];
+    _pp_vload_int(y, exponents + i, maskAll); // y = exponents[i];
     // Set mask according to predicate
-    _pp_veq_float(maskIsZero, y, zero, maskAll); // if (y == 0) {
+    _pp_veq_int(maskIsZero, y, zeroInt, maskAll); // if (y == 0) {
 
     // Execute instruction using mask ("if" clause)
     _pp_vset_float(result, 1.f, maskIsZero); //   output[i] = 1.f;
