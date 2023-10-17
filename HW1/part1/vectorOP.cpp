@@ -53,6 +53,7 @@ void clampedExpVector(float *values, int *exponents, float *output, int N)
   __pp_vec_int y, count;
   __pp_vec_float result;
   __pp_vec_float zero = _pp_vset_float(0.f);
+  __pp_vec_int one = _pp_vset_int(1);
   __pp_vec_float nine = _pp_vset_float(9.999999f);
   __pp_vec_int zeroInt = _pp_vset_int(0);
   __pp_mask maskAll, maskIsZero, maskIsNotZero, maskStillCount, maskTooBig;
@@ -60,9 +61,6 @@ void clampedExpVector(float *values, int *exponents, float *output, int N)
   {
     // All ones
     maskAll = _pp_init_ones();
-
-    // All zeros
-    maskIsNegative = _pp_init_ones(0);
 
     // Load vector of values from contiguous memory addresses
     _pp_vload_float(x, values + i, maskAll); // x = values[i];
@@ -78,18 +76,18 @@ void clampedExpVector(float *values, int *exponents, float *output, int N)
 
     // Execute instruction ("else" clause) 
     _pp_vmove_float(result, x, maskIsNotZero); // float result = x;
-    _pp_vsub_int(count, y, 1, maskIsNotZero); // count = y - 1
+    _pp_vsub_int(count, y, one, maskIsNotZero); // count = y - 1
 
     _pp_vgt_int(maskStillCount, count, zeroInt, maskIsNotZero); // if(count>0)
     while(_pp_cntbits(maskStillCount)){
       _pp_vmult_float(result, result, x, maskStillCount); // result *= x
-      _pp_vsub_int(count, count, 1, maskStillCount); // count -= 1
+      _pp_vsub_int(count, count, one, maskStillCount); // count -= 1
 
       _pp_vgt_int(maskStillCount, count, zeroInt, maskStillCount); // if(count>0)
     }
     
     _pp_vgt_float(maskTooBig, result, nine, maskIsNotZero); // if(result>9.99f)
-    _pp_vset_float(result, nine, maskTooBig); //   result = 9.99f;
+    _pp_vset_float(result, 9.999999f, maskTooBig); //   result = 9.99f;
 
     // Write results back to memory
     _pp_vstore_float(output + i, result, maskAll); // output[i] = result
