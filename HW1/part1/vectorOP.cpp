@@ -59,10 +59,14 @@ void clampedExpVector(float *values, int *exponents, float *output, int N)
   __pp_vec_int zeroInt = _pp_vset_int(0);
   __pp_mask maskAll, maskIsZero, maskIsNotZero, maskStillCount, maskTooBig;
   
-  for (int i = 0; i < N; i += VECTOR_WIDTH)
+  for (int i = 0; i < N + VECTOR_WIDTH; i += VECTOR_WIDTH)
   {
-    // All ones
-    maskAll = _pp_init_ones();
+    if(i+VECTOR_WIDTH > N){
+      maskAll = _pp_init_ones(N-i);
+    }
+    else{
+      maskAll = _pp_init_ones();
+    }
     maskIsZero =  _pp_init_ones(0);
     maskStillCount =  _pp_init_ones(0);
     maskTooBig =  _pp_init_ones(0);
