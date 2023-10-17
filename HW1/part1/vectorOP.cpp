@@ -50,17 +50,22 @@ void clampedExpVector(float *values, int *exponents, float *output, int N)
   // N and VECTOR_WIDTH, not just when VECTOR_WIDTH divides N
   //
   __pp_vec_float x;
-  __pp_vec_int y, count;
-  __pp_vec_float result;
+  __pp_vec_int y;
+  __pp_vec_int count = _pp_vset_int(0);
+  __pp_vec_float result _pp_vset_int(0.f);;
   __pp_vec_float zero = _pp_vset_float(0.f);
   __pp_vec_int one = _pp_vset_int(1);
   __pp_vec_float nine = _pp_vset_float(9.999999f);
   __pp_vec_int zeroInt = _pp_vset_int(0);
   __pp_mask maskAll, maskIsZero, maskIsNotZero, maskStillCount, maskTooBig;
+  
   for (int i = 0; i < N; i += VECTOR_WIDTH)
   {
     // All ones
     maskAll = _pp_init_ones();
+    maskIsZero =  _pp_init_ones(0);
+    maskStillCount =  _pp_init_ones(0);
+    maskTooBig =  _pp_init_ones(0);
 
     // Load vector of values from contiguous memory addresses
     _pp_vload_float(x, values + i, maskAll); // x = values[i];
@@ -69,7 +74,7 @@ void clampedExpVector(float *values, int *exponents, float *output, int N)
     _pp_veq_int(maskIsZero, y, zeroInt, maskAll); // if (y == 0) {
 
     // Execute instruction using mask ("if" clause)
-    _pp_vset_float(result, 1.f, maskIsZero); //   output[i] = 1.f;
+    _pp_vset_float(result, 1.f, maskIsZero); //   result = 1.f;
 
     // Inverse maskIsNegative to generate "else" mask
     maskIsNotZero = _pp_mask_not(maskIsZero); // } else {
