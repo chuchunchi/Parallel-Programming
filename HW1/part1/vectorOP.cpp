@@ -52,7 +52,7 @@ void clampedExpVector(float *values, int *exponents, float *output, int N)
   __pp_vec_float x;
   __pp_vec_int y;
   __pp_vec_int count = _pp_vset_int(0);
-  __pp_vec_float result _pp_vset_int(0.f);;
+  __pp_vec_float result = _pp_vset_float(0.f);;
   __pp_vec_float zero = _pp_vset_float(0.f);
   __pp_vec_int one = _pp_vset_int(1);
   __pp_vec_float nine = _pp_vset_float(9.999999f);
