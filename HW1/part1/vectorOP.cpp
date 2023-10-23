@@ -108,14 +108,31 @@ void clampedExpVector(float *values, int *exponents, float *output, int N)
 // You can assume VECTOR_WIDTH is a power of 2
 float arraySumVector(float *values, int N)
 {
-
+  __pp_vec_float x;
+  __pp_mask maskAll;
   //
   // PP STUDENTS TODO: Implement your vectorized version of arraySumSerial here
   //
-
+  float output = 0.0;
   for (int i = 0; i < N; i += VECTOR_WIDTH)
   {
-  }
+    maskAll = _pp_init_ones();
+    // Load vector of values from contiguous memory addresses
+    _pp_vload_float(x, values + i, maskAll); // x = values[i];
+    for(int j=1; j<VECTOR_WIDTH; j*=2){
+      _pp_hadd_float(x, x);
+      _pp_interleave_float(x, x);
+    }
+    output += x.value[0];
 
-  return 0.0;
+  }
+  return output;
 }
+
+/*
+float sum = 0;
+  for (int i = 0; i < N; i++)
+  {
+    sum += values[i];
+  }
+*/
