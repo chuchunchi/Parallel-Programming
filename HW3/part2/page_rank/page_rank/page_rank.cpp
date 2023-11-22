@@ -67,14 +67,12 @@ void pageRank(Graph g, double *solution, double damping, double convergence)
 
   while (!converged) {
       double no_outgoing_sum = 0.0;
-      #pragma omp parallel for reduction(+:no_outgoing_sum)
       for (int v = 0; v < numNodes; v++) {
           if (outgoing_size(g, v) == 0) {
               no_outgoing_sum += (damping * score_old[v] / numNodes);
           }
       }
 
-      #pragma omp parallel for
       for (int vi = 0; vi < numNodes; vi++) {
           const Vertex* start = incoming_begin(g, vi);
           const Vertex* end = incoming_end(g, vi);
@@ -88,9 +86,9 @@ void pageRank(Graph g, double *solution, double damping, double convergence)
       }
 
       double global_diff = 0.0;
-      #pragma omp parallel for reduction(+:global_diff)
       for (int vi = 0; vi < numNodes; vi++) {
           global_diff += std::abs(score_new[vi] - score_old[vi]);
+          printf("globa diff: %f\n", global_diff);
       }
   
       converged = (global_diff < convergence);
