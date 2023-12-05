@@ -23,7 +23,7 @@ void conj_grad(int colidx[],
     //---------------------------------------------------------------------
     // Initialize the CG algorithm:
     //---------------------------------------------------------------------
-    #pragma omp parallel for
+    
     for (j = 0; j < naa + 1; j++)
     {
         q[j] = 0.0;
@@ -36,7 +36,7 @@ void conj_grad(int colidx[],
     // rho = r.r
     // Now, obtain the norm of r: First, sum squares of r elements locally...
     //---------------------------------------------------------------------
-    #pragma omp parallel for
+    
     for (j = 0; j < lastcol - firstcol + 1; j++)
     {
         rho = rho + r[j] * r[j];
@@ -47,7 +47,7 @@ void conj_grad(int colidx[],
     // The conj grad iteration loop
     //---->
     //---------------------------------------------------------------------
-    #pragma omp parallel for
+    
     for (cgit = 1; cgit <= cgitmax; cgit++)
     {
         //---------------------------------------------------------------------
@@ -61,6 +61,7 @@ void conj_grad(int colidx[],
         //       unrolled-by-two version is some 10% faster.
         //       The unrolled-by-8 version below is significantly faster
         //       on the Cray t3d - overall speed of code is 1.5 times faster.
+        #pragma omp parallel for private(j, k, sum)
         for (j = 0; j < lastrow - firstrow + 1; j++)
         {
             sum = 0.0;
@@ -130,7 +131,6 @@ void conj_grad(int colidx[],
     // The partition submatrix-vector multiply
     //---------------------------------------------------------------------
     sum = 0.0;
-    #pragma omp parallel for
     for (j = 0; j < lastrow - firstrow + 1; j++)
     {
         d = 0.0;
@@ -144,7 +144,7 @@ void conj_grad(int colidx[],
     //---------------------------------------------------------------------
     // At this point, r contains A.z
     //---------------------------------------------------------------------
-    #pragma omp parallel for
+    
     for (j = 0; j < lastcol - firstcol + 1; j++)
     {
         d = x[j] - r[j];
