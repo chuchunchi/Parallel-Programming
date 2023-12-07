@@ -18,8 +18,6 @@ int monte_carlo(long long int my_n_tosses, int &world_rank) {
     }
 
     return my_number_in_circle;
-
-    
 }
 
 int main(int argc, char **argv)
@@ -42,6 +40,7 @@ int main(int argc, char **argv)
     if (world_rank > 0)
     {
         // TODO: handle workers
+        // send(address of var, count, datatype, dest, tag, communicator)
         MPI_Send(&number_in_circle, 1, MPI_LONG_LONG_INT, 0, 0, MPI_COMM_WORLD);
     }
     else if (world_rank == 0)
@@ -51,6 +50,7 @@ int main(int argc, char **argv)
         for (int i = 1; i < world_size; i++)
         {
             long long int number_in_circle_others;
+            // recv(address of var, count, datatype, source, tag, communicator, status)
             MPI_Recv(&number_in_circle_others, 1, MPI_LONG_LONG_INT, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
             number_in_circle_sum += number_in_circle_others;
         }
