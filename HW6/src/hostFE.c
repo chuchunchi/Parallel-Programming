@@ -43,14 +43,14 @@ void hostFE(int filterWidth, float *filter, int imageHeight, int imageWidth,
 
     // Execute the kernel
     size_t global_item_size[] = {imageWidth, imageHeight};
-    size_t local_item_size[] = {1, 1}; // Can be optimized based on the hardware
+    size_t local_item_size[] = {25,25}; 
     status = clEnqueueNDRangeKernel(command_queue, kernel, 2, NULL, global_item_size, local_item_size, 0, NULL, NULL);
 
     // Read the output back to host
     status = clEnqueueReadBuffer(command_queue, outputImageBuffer, CL_TRUE, 0, imageDataSize, outputImage, 0, NULL, NULL);
 
     // Clean up
-    clReleaseMemObject(filterBuffer);
+    // clReleaseMemObject(filterBuffer);
     clReleaseMemObject(inputImageBuffer);
     clReleaseMemObject(outputImageBuffer);
     clReleaseKernel(kernel);
